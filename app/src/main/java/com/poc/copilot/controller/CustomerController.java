@@ -30,12 +30,8 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/customers")
 public class CustomerController {
 
-    private final CustomerService customerService;
-
-    /** STD-JAVA-001-R03: Constructor injection. */
-    public CustomerController(CustomerService customerService) {
-        this.customerService = customerService;
-    }
+    @org.springframework.beans.factory.annotation.Autowired
+    private CustomerService customerService;
 
     // ─── GET /api/customers/{id} (POC-1) ────────────────────────────────────
 
