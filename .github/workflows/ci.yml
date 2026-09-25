@@ -1,0 +1,67 @@
+name: CI
+
+on:
+  push:
+    branches: [ "main", "develop", "feature/**", "fix/**" ]
+  pull_request:
+    branches: [ "main", "develop" ]
+
+jobs:
+  build:
+    name: Build and Test
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+          cache: maven
+
+      - name: Build with Maven
+        working-directory: app
+        run: mvn -B verify --no-transfer-progress
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results
+          path: app/target/surefire-reports/
+
+  mcp-server-test:
+    name: MCP Server Tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: mcp-server/package-lock.json
+
+      - name: Install dependencies
+        working-directory: mcp-server
+        run: npm ci
+
+      - name: Run tests
+        working-directory: mcp-server
+        run: npm test
+
+      - name: Check for secrets in code
+        run: |
+          if grep -rn "ATATT\|xoxb-\|sk-\|password\s*=\s*['\"][^'\"]\|secret\s*=\s*['\"][^'\"]" \
+            --include="*.ts" --include="*.js" --include="*.java" --include="*.properties" \
+            --exclude-dir=node_modules --exclude-dir=target .; then
+            echo "::error::Possible hardcoded secret detected!"
+            exit 1
+          fi
+          echo "No hardcoded secrets found."

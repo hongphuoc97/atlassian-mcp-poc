@@ -1,0 +1,30 @@
+services:
+  mcp-server:
+    build:
+      context: ./mcp-server
+      dockerfile: Dockerfile
+    environment:
+      - JIRA_BASE_URL=${JIRA_BASE_URL}
+      - CONFLUENCE_BASE_URL=${CONFLUENCE_BASE_URL}
+      - ATLASSIAN_EMAIL=${ATLASSIAN_EMAIL}
+      - ATLASSIAN_API_TOKEN=${ATLASSIAN_API_TOKEN}
+      - JIRA_ALLOWED_PROJECTS=POC
+      - CONFLUENCE_ALLOWED_SPACES=AICR
+      - MCP_TRANSPORT=stdio
+      - CACHE_TTL_SECONDS=120
+      - REQUEST_TIMEOUT_MS=8000
+      - MAX_PAGE_CONTENT_CHARS=4000
+    stdin_open: true
+    tty: false
+    restart: unless-stopped
+
+  app:
+    build:
+      context: ./app
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    environment:
+      - SPRING_PROFILES_ACTIVE=dev
+    depends_on: []
+    restart: unless-stopped
