@@ -381,7 +381,7 @@ public class CustomerService {
 <h2>STD-SEC-001-R01 — No Hardcoded Secrets</h2>
 <p><strong>Severity:</strong> CRITICAL | <strong>Applies To:</strong> All source files</p>
 <p><strong>Rule:</strong> API keys, passwords, tokens, and secrets must never appear in source code or committed configuration files. Use environment variables or a secret manager.</p>
-<p><strong>Bad:</strong> <code>String apiKey = "ATATT3xFfGF0...";</code></p>
+<p><strong>Bad:</strong> <code>String apiKey = "FAKE_TOKEN_XYZ...";</code></p>
 <p><strong>Good:</strong> <code>String apiKey = System.getenv("API_KEY");</code></p>
 
 <h2>STD-SEC-001-R02 — No SQL String Concatenation</h2>
